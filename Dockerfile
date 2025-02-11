@@ -1,17 +1,17 @@
-# Step 1: Build the project with Maven in a separate build stage (multi-stage build)
+# Build with Maven in a separate build stage
 FROM maven:3.8.1-openjdk-11 AS build
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the pom.xml and the src directory into the container
+# Copy pom and src into container
 COPY pom.xml /app
 COPY src /app/src
 
 # Run Maven to build the project and generate the JAR file
 RUN mvn clean install
 
-# Step 2: Run the application from the JAR file
+# Second stage
 FROM openjdk:11-jdk-slim
 
 # Set the working directory in the container
