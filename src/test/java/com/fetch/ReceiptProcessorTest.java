@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import com.fetch.ReceiptProcessor.PointsHandler;
 import com.fetch.ReceiptProcessor.PostHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

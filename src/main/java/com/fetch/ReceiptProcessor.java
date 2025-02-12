@@ -1,3 +1,8 @@
+/*
+ * Filename: ReceiptProcessor
+ * Description: Simple java server with two endpoints that can take in a receipt and assign it points
+ * Author: Sammy Tran
+ */
 package com.fetch;
 
 import com.sun.net.httpserver.HttpServer;
@@ -31,7 +36,6 @@ public class ReceiptProcessor {
         server.createContext("/receipts", new PointsHandler());
         server.setExecutor(null); 
         server.start();
-        System.out.println("Server started on port " + port);
     }
 
     // helper method to send a properly formatted response with a given status code
@@ -63,7 +67,6 @@ public class ReceiptProcessor {
 
             String path = exchange.getRequestURI().getPath();
             String[] parts = path.split("/");
-            System.out.println(path);
 
             if (parts.length == 4 && "receipts".equals(parts[1]) && "points".equals(parts[3])) {
                 try {
@@ -119,8 +122,6 @@ public class ReceiptProcessor {
                 return;
             }
 
-            System.out.println("post received");
-
             InputStream inputStream = exchange.getRequestBody();
             String json = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
@@ -135,22 +136,7 @@ public class ReceiptProcessor {
                 JSONArray items = jsonObject.getJSONArray("items");
                 String total = jsonObject.getString("total");
 
-                // Printing the values
-                System.out.println("Retailer: " + retailer);
-                System.out.println("Purchase Date: " + purchaseDate);
-                System.out.println("Purchase Time: " + purchaseTime);
-                System.out.println("Total: " + total);
-                System.out.println("Items: ");
-                for (int i = 0; i < items.length(); i++) {
-                    JSONObject item = items.getJSONObject(i);
-                    System.out.println(
-                            "  - " + item.getString("shortDescription") + ": " + item.getString("price"));
-                }
-
                 int points = calculatePoints(retailer, purchaseDate, purchaseTime, items, total);
-
-
-                System.out.println("generating uuid");
 
                 // generate a universally unique ID and map it to the receipts score
                 UUID uniqueID = UUID.randomUUID();
@@ -159,16 +145,11 @@ public class ReceiptProcessor {
                 response = "{\"id\":\"" + uniqueID + "\"}";
                 sendResponse(exchange, 200, response);
 
-                System.out.println(response);
-                System.out.println("id: " + uniqueID + " points:  " + points);
-
             } catch (Exception e) {
-
-                System.out.println("Error: " + e.getMessage());
-                e.printStackTrace();
 
                 response = "{ \"error\": \"The receipt is invalid.\" }";
                 sendResponse(exchange,400, response);
+
             }
         }
 
